@@ -7,7 +7,6 @@ defmodule Webring do
     port = System.get_env("PORT", "5555") |> String.to_integer()
     Logger.info("Starting on port: #{port}")
 
-
     {:ok, _} =
       :cowboy.start_clear(
         :http,
