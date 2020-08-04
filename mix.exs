@@ -14,7 +14,7 @@ defmodule Webring.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: { Webring, [] },
+      mod: {Webring, []},
       extra_applications: [:cowboy, :ranch, :logger]
     ]
   end

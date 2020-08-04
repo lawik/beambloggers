@@ -6,6 +6,7 @@ defmodule Webring.Handler do
 
   def handle(%{path: "/shuffle"} = request, state) do
     {_, url} = Webring.FairChance.rotate()
+
     response =
       :cowboy_req.reply(
         302,
