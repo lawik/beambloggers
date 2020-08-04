@@ -13,13 +13,16 @@ defmodule Webring do
         [{:port, port}],
         %{env: %{dispatch: dispatch_config}}
       )
+
+    Webring.Supervisor.start_link(name: Webring.Supervisor)
   end
 
   def build_dispatch_config do
     :cowboy_router.compile([
       {:_,
        [
-         {"/", Webring.Handler, []}
+         {"/", Webring.Handler, []},
+         {"/shuffle", Webring.Handler, []}
        ]}
     ])
   end

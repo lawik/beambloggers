@@ -4,12 +4,25 @@ defmodule Webring.Handler do
     handle(req, state)
   end
 
+  def handle(%{path: "/shuffle"} = request, state) do
+    {_, url} = Webring.FairChance.rotate()
+    response =
+      :cowboy_req.reply(
+        302,
+        Map.put(@default_headers, "location", url),
+        "",
+        request
+      )
+
+    {:ok, response, state}
+  end
+
   def handle(request, state) do
     response =
       :cowboy_req.reply(
         200,
         @default_headers,
-        "hello world",
+        "<h1>Beam Bloggers Webring</h1>",
         request
       )
 
