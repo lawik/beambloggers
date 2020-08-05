@@ -3,6 +3,7 @@ defmodule Webring do
 
   @site_dir "priv/sites"
   @index_file "priv/generated/index.html"
+  @integration_snippet "priv/integration/webring.min.html"
 
   def start(_type, _args) do
     dispatch_config = build_dispatch_config()
@@ -27,7 +28,8 @@ defmodule Webring do
       {:_,
        [
          {"/", :cowboy_static, {:file, @index_file}},
-         {"/shuffle", Webring.Handler, []}
+         {"/shuffle", Webring.Handler, []},
+         {"/integration", :cowboy_static, {:file, @integration_snippet}}
        ]}
     ])
   end

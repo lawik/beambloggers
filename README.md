@@ -21,6 +21,8 @@ Somewhere below your content is recommended. Feel free to adjust the styling to 
 
 In `integration` you'll find the `webring.min.html` and `webring.html` which is the markup you need to integrate in your site. Just pick one, the .min is less readable but denser.
 
+Once published you will be able to pull the current integration by just sending a GET request to /integration.
+
 ## How to get rid of us
 
 Just send a PR to have your site removed and remove the shuffler from your site :)
