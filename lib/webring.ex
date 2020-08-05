@@ -65,7 +65,9 @@ defmodule Webring do
   defp site_template(contents) do
     """
     <html>
-      <head><title>Beam Bloggers Webring</title></head>
+      <head>
+        <title>Beam Bloggers Webring</title>
+      </head>
       <body>
       <h1>Beam Bloggers Webring</h1>
       #{contents}
