@@ -3,6 +3,7 @@ defmodule Webring do
 
   @site_dir "priv/sites"
   @index_file "priv/generated/index.html"
+  @style_file "priv/static/style.css"
   @integration_snippet "priv/integration/webring.min.html"
 
   def start(_type, _args) do
@@ -28,6 +29,7 @@ defmodule Webring do
       {:_,
        [
          {"/", :cowboy_static, {:file, @index_file}},
+         {"/style.css", :cowboy_static, {:file, @style_file}},
          {"/shuffle", Webring.Handler, []},
          {"/integration", :cowboy_static, {:file, @integration_snippet}}
        ]}
@@ -53,9 +55,11 @@ defmodule Webring do
 
   defp site_to_html([url, title, blurb]) do
     """
+    <div class="site">
     <h2>#{title}</h2>
-    <a href="#{url}">#{url}</a>
+    <a class="link" href="#{url}">#{url}</a>
     <p>#{blurb}</p>
+    </div>
     """
   end
 
@@ -69,9 +73,11 @@ defmodule Webring do
     <html>
       <head>
         <title>Beam Bloggers Webring</title>
+        <link rel="stylesheet" type="text/css" href="/style.css" />
       </head>
       <body>
       <h1>Beam Bloggers Webring</h1>
+      <p>If you have a webring that regularly covers Elixir, Erlang, the BEAM or any related topics do <a href="https://github.com/lawik/beambloggers">join the webring</a>.</p>
       #{contents}
       </body>
     </html>
