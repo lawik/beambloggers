@@ -77,7 +77,7 @@ defmodule Webring do
       </head>
       <body>
       <h1>Beam Bloggers Webring</h1>
-      <p>If you have a webring that regularly covers Elixir, Erlang, the BEAM or any related topics do <a href="https://github.com/lawik/beambloggers">join the webring</a>.</p>
+      <p>If you have a blog that regularly covers Elixir, Erlang, the BEAM or any related topics do <a href="https://github.com/lawik/beambloggers">join the webring</a>.</p>
       #{contents}
       </body>
     </html>
