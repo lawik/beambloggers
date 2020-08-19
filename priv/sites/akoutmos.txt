@@ -1,0 +1,5 @@
+https://akoutmos.com
+
+Alex Koutmos
+
+Alex is a Senior Software Engineer who writes backends in Elixir, frontends in VueJS and deploys his apps using Kubernetes. He is also a panelist on the Elixir Mix podcast (https://devchat.tv/podcasts/elixir-mix/) and maintains several Open Source packages on Hex (https://hex.pm/users/akoutmos).
