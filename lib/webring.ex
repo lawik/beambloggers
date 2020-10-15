@@ -50,7 +50,9 @@ defmodule Webring do
 
     contents = site_template(contents)
 
-    File.write!(@index_file, contents)
+    with :ok <- File.mkdir_p(Path.dirname(@index_file)) do
+      File.write!(@index_file, contents)
+    end
   end
 
   defp site_to_html([url, title, blurb]) do
