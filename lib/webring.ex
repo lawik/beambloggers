@@ -50,6 +50,7 @@ defmodule Webring do
 
     contents = site_template(contents)
 
+    File.mkdir_p!(Path.dirname(@index_file))
     File.write!(@index_file, contents)
   end
 
