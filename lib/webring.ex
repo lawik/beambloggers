@@ -50,7 +50,7 @@ defmodule Webring do
 
     contents = site_template(contents)
 
-    with :ok <- File.mkdir_p(Path.dirname(@index_file)) do
+    with :ok <- File.mkdir_p!(Path.dirname(@index_file)) do
       File.write!(@index_file, contents)
     end
   end
