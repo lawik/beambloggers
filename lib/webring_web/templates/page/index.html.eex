@@ -1,0 +1,23 @@
+<section class="latest">
+<h2>Latest from the feeds</h2>
+<ul>
+<%= for %{item: item, site: site} <- @latest do %>
+    <li><a href="<%= item[:url] %>"><%= item[:title] %></a> by <%= site.title %> - <%= item[:datetime] |> Timex.format!("{ISOdate}") %></li>
+<% end %>
+</ul>
+</section>
+
+<%= for site <- @sites do %>
+<section class="site">
+<h2><%= site.title %></h2>
+<a class="link" href="<%= site.url %>"><%= site.url %></a>
+<%= {:safe, site.fancy_body} %>
+<%= if @feeds[site.hash] && Enum.count(@feeds[site.hash][:items]) > 0 do %>
+    <ul>
+    <%= for item <- Enum.take(@feeds[site.hash][:items], 3) do %>
+        <li><a href="<%= item[:url] %>"><%= item[:title] %></a> - <%= item[:datetime] |> Timex.format!("{ISOdate}") %></li>
+    <% end %>
+    </ul>
+<% end %>
+</section>
+<% end %>

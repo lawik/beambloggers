@@ -1,0 +1,66 @@
+/* This file is for your main application css. */
+@import "./phoenix.css";
+
+/* Alerts and form errors */
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.alert-info {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.alert p {
+  margin-bottom: 0;
+}
+.alert:empty {
+  display: none;
+}
+.invalid-feedback {
+  color: #a94442;
+  display: block;
+  margin: -1rem 0 2rem;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
+
+body {
+  background-color: rgb(162, 0, 62); /* Erlang Red */
+  color: white;
+  font-family: "Titillium Web", helvetica, arial, "sans-serif";
+  padding: 16px;
+}
+
+h1,
+p,
+.site,
+.latest {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a,
+a:link,
+a:active,
+a:visited {
+  color: white;
+  text-decoration: underline;
+}
+
+ul {
+  list-style-type: square;
+}

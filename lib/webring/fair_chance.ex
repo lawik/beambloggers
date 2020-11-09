@@ -1,8 +1,6 @@
 defmodule Webring.FairChance do
   use GenServer
 
-  @site_dir "priv/sites"
-
   def start_link(_) do
     GenServer.start_link(Webring.FairChance, nil, name: Webring.FairChance)
   end
@@ -19,28 +17,21 @@ defmodule Webring.FairChance do
     {:reply, site, state}
   end
 
+  @impl true
+  def handle_call(:list_sites, _from, {_, _, site_list} = state) do
+    {:reply, site_list, state}
+  end
+
   def rotate do
     GenServer.call(Webring.FairChance, :rotate)
   end
 
-  defp hash(filename, data) do
-    :crypto.hash(:md5, filename <> data) |> Base.encode16()
-  end
-
-  defp is_valid_url?({_, url}) do
-    uri = URI.parse(url)
-    uri.scheme != nil and uri.host =~ "."
+  def list_sites do
+    GenServer.call(Webring.FairChance, :list_sites)
   end
 
   defp build_site_rotation do
-    File.ls!(@site_dir)
-    |> Enum.map(fn filename ->
-      data = File.read!(Path.join(@site_dir, filename))
-      [url | _] = String.split(data)
-      site_hash = hash(filename, data)
-      {site_hash, url}
-    end)
-    |> Enum.filter(&is_valid_url?/1)
+    Webring.Site.list_sites()
     |> Enum.sort()
   end
 
