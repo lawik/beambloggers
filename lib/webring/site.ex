@@ -3,8 +3,9 @@ defmodule Webring.Site do
 
   alias Webring.Site
 
-  @site_dir "priv/sites"
-  @sites File.ls!(@site_dir)
+  @site_dir Path.join("priv", "sites")
+  @site_files File.ls!(@site_dir)
+  @sites @site_files
          |> Enum.map(fn filename ->
            data = File.read!(Path.join(@site_dir, filename))
            [url, title, blurb] = String.split(data, "\n\n", parts: 3)
@@ -22,6 +23,19 @@ defmodule Webring.Site do
            uri = URI.parse(url)
            uri.scheme != nil and uri.host =~ "." and fancy
          end)
+
+  # mark sites as external resources
+  for site_file <- @site_files do
+    @external_resource @site_dir |> Path.join(site_file) |> Path.relative_to_cwd()
+  end
+
+  def __mix_recompile__? do
+    @site_dir |> File.ls!() |> :erlang.md5() !=
+      :erlang.md5(@site_files)
+  end
+
+  # TODO: Remove me once we require Elixir v1.11+.
+  def __phoenix_recompile__?, do: __mix_recompile__?()
 
   def hash(filename, data) do
     :crypto.hash(:md5, filename <> data) |> Base.encode16()
