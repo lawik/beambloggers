@@ -68,26 +68,31 @@ defmodule Webring.FeedMe do
         feed = parse_feed(rss_feed)
 
         if not is_nil(feed) do
-          title = feed["title"]
-          Logger.info("Parsing seems okay, found title: #{title}")
+          Logger.info("Parsing seems okay, found title: #{feed.title}")
 
-          # items
+          # entries
           ## title, description, pub_date, link, guid
 
-          items =
-            Enum.map(feed["items"], fn item ->
+          entries =
+            Enum.map(feed.entries, fn item ->
               {datetime, iso} =
-                case Timex.parse(item["pub_date"], "{RFC1123}") do
-                  {:ok, dt} -> {dt, Timex.format!(dt, "{ISO:Extended}")}
-                  _ -> {nil, nil}
+                case Timex.parse(item.updated, "{RFC1123}") do
+                  {:ok, dt} ->
+                    {dt, Timex.format!(dt, "{ISO:Extended}")}
+
+                  {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
+                    {NaiveDateTime.from_iso8601!(item.updated), item.updated}
+
+                  _ ->
+                    {nil, nil}
                 end
 
               %{
-                title: item["title"],
-                description: item["description"],
+                title: item.title,
+                description: item.summary,
                 datetime: datetime,
                 iso_datetime: iso,
-                url: item["link"]
+                url: item.link
               }
             end)
             |> Enum.filter(fn item ->
@@ -100,9 +105,9 @@ defmodule Webring.FeedMe do
               :desc
             )
 
-          item_count = Enum.count(items)
-          Logger.info("Items parse: #{item_count}")
-          %{title: title, items: items}
+          entry_count = Enum.count(entries)
+          Logger.info("Items parse: #{entry_count}")
+          %{title: feed.title, items: entries}
         else
           nil
         end
@@ -128,8 +133,12 @@ defmodule Webring.FeedMe do
   end
 
   defp parse_feed(feed) do
-    case FastRSS.parse(feed) do
-      {:ok, rss} ->
+    case FeederEx.parse(feed) do
+      {:ok, rss, rest} ->
+        unless String.trim(rest) == "" do
+          Logger.info("Feed contains additional data: #{inspect(rest)}")
+        end
+
         rss
 
       error ->
@@ -141,27 +150,23 @@ defmodule Webring.FeedMe do
   defp find_rss(body, url) do
     case Floki.parse_document(body) do
       {:ok, doc} ->
-        Floki.find(doc, "link[type=\"application/rss+xml\"")
+        find_rss_link(doc)
         |> Enum.find_value(fn {_link, attrs, _} ->
-          rss_path =
-            Enum.find_value(attrs, fn {key, value} ->
-              if key == "href", do: value, else: false
-            end)
-
-          # Some are relative, fix that
-          rss_url =
-            case rss_path do
-              "/" <> _ = path -> Path.join(url, path)
-              "http" <> _ = url -> url
-              _ -> nil
-            end
-
-          rss_url
+          Enum.find_value(attrs, fn {key, value} ->
+            # Some are relative, fix that
+            if key == "href", do: URI.merge(url, value), else: nil
+          end)
         end)
 
       error ->
         Logger.info("Parsing failed for URL #{url}: #{inspect(error)}")
         nil
+    end
+  end
+
+  defp find_rss_link(doc) do
+    with [] <- Floki.find(doc, "link[type=\"application/rss+xml\"") do
+      Floki.find(doc, "link[type=\"application/atom+xml\"")
     end
   end
 
