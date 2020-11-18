@@ -18,6 +18,12 @@ defmodule WebringWeb.PageController do
 
         %{item: item, site: site}
       end)
+      |> Enum.sort_by(
+        fn entry ->
+          entry.item[:iso_datetime]
+        end,
+        :desc
+      )
 
     render(conn, "index.html", %{sites: sites, feeds: feeds, latest: latest})
   end
