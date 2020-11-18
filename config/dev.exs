@@ -61,7 +61,8 @@ config :webring, WebringWeb.Endpoint,
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/webring_web/(live|views)/.*(ex)$",
-      ~r"lib/webring_web/templates/.*(eex)$"
+      ~r"lib/webring_web/templates/.*(eex)$",
+      ~r"priv/sites/*"
     ]
   ]
 
