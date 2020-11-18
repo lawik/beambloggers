@@ -7,8 +7,9 @@
 </ul>
 </section>
 
+
 <%= for site <- @sites do %>
-<section class="site">
+<article class="site">
 <h2><%= site.title %></h2>
 <a class="link" href="<%= site.url %>"><%= site.url %></a>
 <%= {:safe, site.fancy_body} %>
@@ -19,5 +20,5 @@
     <% end %>
     </ul>
 <% end %>
-</section>
+</article>
 <% end %>
