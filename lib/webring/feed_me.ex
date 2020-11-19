@@ -36,6 +36,7 @@ defmodule Webring.FeedMe do
   @impl true
   def handle_info(:check, state) do
     state = check(state)
+    schedule_check()
     {:noreply, state}
   end
 
