@@ -46,6 +46,7 @@ defmodule Webring.Site do
     :crypto.hash(:md5, filename <> data) |> Base.encode16()
   end
 
+  # TODO: This function can be removed after testing
   def list_sites do
     get_sites()
     |> Enum.map(fn site ->
