@@ -2,7 +2,7 @@ defmodule WebringWeb.PageController do
   use WebringWeb, :controller
 
   def index(conn, _params) do
-    sites = Webring.Site.list_sites()
+    sites = Webring.Site.get_sites()
     feeds = Webring.FeedMe.list_feeds()
 
     latest =

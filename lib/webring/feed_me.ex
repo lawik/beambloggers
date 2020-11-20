@@ -6,6 +6,7 @@ defmodule Webring.FeedMe do
   # hourly
   @check_interval 1000 * 60 * 60
 
+  # API
   def start_link(_) do
     GenServer.start_link(Webring.FeedMe, nil, name: Webring.FeedMe)
   end
@@ -14,9 +15,10 @@ defmodule Webring.FeedMe do
     GenServer.call(Webring.FeedMe, :list)
   end
 
+  # GenServer Implementation
   @impl true
   def init(nil) do
-    sites = Webring.Site.list_sites()
+    sites = Webring.Site.get_sites()
 
     state = %{
       sites: sites,
