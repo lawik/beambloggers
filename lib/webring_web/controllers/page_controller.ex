@@ -18,6 +18,29 @@ defmodule WebringWeb.PageController do
 
         %{item: item, site: site}
       end)
+      |> Enum.sort_by(
+        fn entry ->
+          entry.item[:iso_datetime]
+        end,
+        :desc
+      )
+
+    sites =
+      sites
+      |> Enum.sort_by(
+        fn site ->
+          feed = feeds[site.hash]
+
+          if not is_nil(feed) and feed.items != [] do
+            [latest | _] = feed.items
+            latest[:iso_datetime]
+          else
+            # bump to bottom sorting if no RSS or items
+            "2001" <> site.hash
+          end
+        end,
+        :desc
+      )
 
     render(conn, "index.html", %{sites: sites, feeds: feeds, latest: latest})
   end

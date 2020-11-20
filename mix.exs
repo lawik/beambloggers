@@ -20,7 +20,7 @@ defmodule Webring.MixProject do
   def application do
     [
       mod: {Webring.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :xmerl]
     ]
   end
 
@@ -46,7 +46,7 @@ defmodule Webring.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:earmark, "~> 1.4"},
-      {:fast_rss, "~> 0.3.4"},
+      {:feeder_ex, "~> 1.1"},
       {:finch, "~> 0.5"},
       {:floki, "~> 0.29"},
       {:timex, "~> 3.0"}
