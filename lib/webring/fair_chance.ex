@@ -1,10 +1,20 @@
 defmodule Webring.FairChance do
   use GenServer
 
+  # API
   def start_link(_) do
-    GenServer.start_link(Webring.FairChance, nil, name: Webring.FairChance)
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
+  def rotate do
+    GenServer.call(__MODULE__, :rotate)
+  end
+
+  def list_sites do
+    GenServer.call(__MODULE__, :list_sites)
+  end
+
+  # GenServer Implementation
   @impl true
   def init(nil) do
     sorted_sites = build_site_rotation()
@@ -22,16 +32,8 @@ defmodule Webring.FairChance do
     {:reply, site_list, state}
   end
 
-  def rotate do
-    GenServer.call(Webring.FairChance, :rotate)
-  end
-
-  def list_sites do
-    GenServer.call(Webring.FairChance, :list_sites)
-  end
-
   defp build_site_rotation do
-    Webring.Site.list_sites()
+    Webring.Site.get_sites()
     |> Enum.sort()
   end
 
