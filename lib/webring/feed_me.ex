@@ -6,6 +6,7 @@ defmodule Webring.FeedMe do
   # hourly
   @check_interval 1000 * 60 * 60
 
+  # API
   def start_link(_) do
     GenServer.start_link(Webring.FeedMe, nil, name: Webring.FeedMe)
   end
@@ -14,6 +15,7 @@ defmodule Webring.FeedMe do
     GenServer.call(Webring.FeedMe, :list)
   end
 
+  # GenServer Implementation
   @impl true
   def init(nil) do
     sites = Webring.Site.list_sites()
@@ -62,62 +64,112 @@ defmodule Webring.FeedMe do
       Logger.info("RSS URL: #{rss_url}")
     end
 
-    if rss_url do
-      rss_feed = request_url(site.url, rss_url)
+    with  rss_url when not is_nil(rss_url) <- rss_url,
+          rss_feed_body when not is_nil(rss_feed_body) <- request_url(site.url, rss_url),
+          feed when not is_nil(feed) <- parse_feed(rss_feed_body)
+    do
+      Logger.info("Parsing seems okay, found title: #{feed.title}")
 
-      if rss_feed != "" do
-        feed = parse_feed(rss_feed)
+      # entries
+      ## title, description, pub_date, link, guid
 
-        if not is_nil(feed) do
-          Logger.info("Parsing seems okay, found title: #{feed.title}")
+      entries =
+        Enum.map(feed.entries, fn item ->
+          {datetime, iso} =
+            case Timex.parse(item.updated, "{RFC1123}") do
+              {:ok, dt} ->
+                {dt, Timex.format!(dt, "{ISO:Extended}")}
 
-          # entries
-          ## title, description, pub_date, link, guid
+              {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
+                {NaiveDateTime.from_iso8601!(item.updated), item.updated}
 
-          entries =
-            Enum.map(feed.entries, fn item ->
-              {datetime, iso} =
-                case Timex.parse(item.updated, "{RFC1123}") do
-                  {:ok, dt} ->
-                    {dt, Timex.format!(dt, "{ISO:Extended}")}
+              _ ->
+                {nil, nil}
+            end
 
-                  {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
-                    {NaiveDateTime.from_iso8601!(item.updated), item.updated}
+          %{
+            title: item.title,
+            description: item.summary,
+            datetime: datetime,
+            iso_datetime: iso,
+            url: item.link
+          }
+        end)
+        |> Enum.filter(fn item ->
+          item.datetime
+        end)
+        |> Enum.sort_by(
+          fn item ->
+            item.iso_datetime
+          end,
+          :desc
+        )
 
-                  _ ->
-                    {nil, nil}
-                end
-
-              %{
-                title: item.title,
-                description: item.summary,
-                datetime: datetime,
-                iso_datetime: iso,
-                url: item.link
-              }
-            end)
-            |> Enum.filter(fn item ->
-              item.datetime
-            end)
-            |> Enum.sort_by(
-              fn item ->
-                item.iso_datetime
-              end,
-              :desc
-            )
-
-          entry_count = Enum.count(entries)
-          Logger.info("Items parse: #{entry_count}")
-          %{title: feed.title, items: entries}
-        else
-          nil
-        end
-      else
-        nil
-      end
+      entry_count = Enum.count(entries)
+      Logger.info("Items parse: #{entry_count}")
+      %{title: feed.title, items: entries}
     else
-      nil
+      _ -> nil
     end
+
+
+    # TODO: Removed once approved
+    # if rss_url do
+    #   rss_feed = request_url(site.url, rss_url)
+
+    #   if rss_feed != "" do
+    #     feed = parse_feed(rss_feed)
+
+    #     if not is_nil(feed) do
+    #       Logger.info("Parsing seems okay, found title: #{feed.title}")
+
+    #       # entries
+    #       ## title, description, pub_date, link, guid
+
+    #       entries =
+    #         Enum.map(feed.entries, fn item ->
+    #           {datetime, iso} =
+    #             case Timex.parse(item.updated, "{RFC1123}") do
+    #               {:ok, dt} ->
+    #                 {dt, Timex.format!(dt, "{ISO:Extended}")}
+
+    #               {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
+    #                 {NaiveDateTime.from_iso8601!(item.updated), item.updated}
+
+    #               _ ->
+    #                 {nil, nil}
+    #             end
+
+    #           %{
+    #             title: item.title,
+    #             description: item.summary,
+    #             datetime: datetime,
+    #             iso_datetime: iso,
+    #             url: item.link
+    #           }
+    #         end)
+    #         |> Enum.filter(fn item ->
+    #           item.datetime
+    #         end)
+    #         |> Enum.sort_by(
+    #           fn item ->
+    #             item.iso_datetime
+    #           end,
+    #           :desc
+    #         )
+
+    #       entry_count = Enum.count(entries)
+    #       Logger.info("Items parse: #{entry_count}")
+    #       %{title: feed.title, items: entries}
+    #     else
+    #       nil
+    #     end
+    #   else
+    #     nil
+    #   end
+    # else
+    #   nil
+    # end
   end
 
   defp check(%{sites: sites} = state) do
