@@ -1,0 +1,5 @@
+https://nts.strzibny.name/
+
+Josef Strzibny
+
+Josef is a full-stack software engineer interested in all things Elixir, Ruby, and Linux.
