@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Beam Bloggers Webring</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <link rel="alternate" type="application/rss+xml" href="<%= WebringWeb.Endpoint.url() <> Routes.page_path(@conn, :rss) %>" />
+
     <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body>

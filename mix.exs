@@ -49,7 +49,8 @@ defmodule Webring.MixProject do
       {:feeder_ex, "~> 1.1"},
       {:finch, "~> 0.5"},
       {:floki, "~> 0.29"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:rss, github: "lawik/elixir-rss"}
     ]
   end
 
