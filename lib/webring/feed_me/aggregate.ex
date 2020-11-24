@@ -12,9 +12,10 @@ defmodule Webring.FeedMe.Aggregate do
     }
   end
 
-  def update_item(agg, guid, title, description, rfc1123_date, url) do
+  def update_item(agg, guid, title, description, rfc1123_date, url, site_title) do
     # Should cover most cases where people have bad GUIDs
     guid = "#{url}---#{guid}"
+    description = "From #{site_title}: #{description}"
 
     items =
       case rfc_to_iso(rfc1123_date) do

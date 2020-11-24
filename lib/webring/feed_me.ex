@@ -77,7 +77,8 @@ defmodule Webring.FeedMe do
           item.title,
           item.description,
           item.rfc_datetime,
-          item.url
+          item.url,
+          feed.title
         )
       end)
 
