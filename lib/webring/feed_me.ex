@@ -53,21 +53,22 @@ defmodule Webring.FeedMe do
   end
 
   def check_rss(site) do
-    body = request_url(site.url, site.url)
-    rss_url = find_rss(body, site.url)
+    {:ok, body} = request_url(site.url, site.url)
+    # rss_url = find_rss(body, site.url)
 
     Logger.info("URL: #{site.url}")
 
-    if is_nil(rss_url) do
-      Logger.info("No RSS URL found")
-    else
-      Logger.info("RSS URL: #{rss_url}")
-    end
+    # if is_nil(rss_url) do
+    #
+    # else
+    #
+    # end
 
-    with  rss_url when not is_nil(rss_url) <- rss_url,
-          rss_feed_body when not is_nil(rss_feed_body) <- request_url(site.url, rss_url),
-          feed when not is_nil(feed) <- parse_feed(rss_feed_body)
+    with  {:ok, rss_url} <- find_rss(body, site.url),
+          {:ok, rss_feed_body} <- request_url(site.url, rss_url),
+          {:ok, feed} <- parse_feed(rss_feed_body)
     do
+      Logger.info("RSS URL: #{rss_url}")
       Logger.info("Parsing seems okay, found title: #{feed.title}")
 
       # entries
@@ -109,67 +110,13 @@ defmodule Webring.FeedMe do
       Logger.info("Items parse: #{entry_count}")
       %{title: feed.title, items: entries}
     else
-      _ -> nil
+      {:error, :rss_error} ->
+        Logger.info("No RSS URL found")
+        nil
+      {:error, :parse_error} -> nil
+      {:error, :url_error} -> nil
     end
 
-
-    # TODO: Removed once approved
-    # if rss_url do
-    #   rss_feed = request_url(site.url, rss_url)
-
-    #   if rss_feed != "" do
-    #     feed = parse_feed(rss_feed)
-
-    #     if not is_nil(feed) do
-    #       Logger.info("Parsing seems okay, found title: #{feed.title}")
-
-    #       # entries
-    #       ## title, description, pub_date, link, guid
-
-    #       entries =
-    #         Enum.map(feed.entries, fn item ->
-    #           {datetime, iso} =
-    #             case Timex.parse(item.updated, "{RFC1123}") do
-    #               {:ok, dt} ->
-    #                 {dt, Timex.format!(dt, "{ISO:Extended}")}
-
-    #               {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
-    #                 {NaiveDateTime.from_iso8601!(item.updated), item.updated}
-
-    #               _ ->
-    #                 {nil, nil}
-    #             end
-
-    #           %{
-    #             title: item.title,
-    #             description: item.summary,
-    #             datetime: datetime,
-    #             iso_datetime: iso,
-    #             url: item.link
-    #           }
-    #         end)
-    #         |> Enum.filter(fn item ->
-    #           item.datetime
-    #         end)
-    #         |> Enum.sort_by(
-    #           fn item ->
-    #             item.iso_datetime
-    #           end,
-    #           :desc
-    #         )
-
-    #       entry_count = Enum.count(entries)
-    #       Logger.info("Items parse: #{entry_count}")
-    #       %{title: feed.title, items: entries}
-    #     else
-    #       nil
-    #     end
-    #   else
-    #     nil
-    #   end
-    # else
-    #   nil
-    # end
   end
 
   defp check(%{sites: sites} = state) do
@@ -192,18 +139,18 @@ defmodule Webring.FeedMe do
           Logger.info("Feed contains additional data: #{inspect(rest)}")
         end
 
-        rss
+        {:ok, rss}
 
       error ->
         Logger.info("An error occurred in feed parsing: #{inspect(error)}")
-        nil
+        {:ok, :parse_error}
     end
   end
 
   defp find_rss(body, url) do
     case Floki.parse_document(body) do
       {:ok, doc} ->
-        find_rss_link(doc)
+        rss_url = find_rss_link(doc)
         |> Enum.find_value(fn {_link, attrs, _} ->
           Enum.find_value(attrs, fn {key, value} ->
             # Some are relative, fix that
@@ -211,9 +158,11 @@ defmodule Webring.FeedMe do
           end)
         end)
 
+      {:ok, rss_url}
+
       error ->
         Logger.info("Parsing failed for URL #{url}: #{inspect(error)}")
-        nil
+        {:error, :rss_error}
     end
   end
 
@@ -236,11 +185,11 @@ defmodule Webring.FeedMe do
         handle_redirect(base_url, url, headers)
 
       {:ok, response} ->
-        response.body
+        {:ok, response.body}
 
       error ->
         Logger.info("Failed to request URL #{url}, error: #{inspect(error)}")
-        ""
+        {:error, :url_error}
     end
   end
 
