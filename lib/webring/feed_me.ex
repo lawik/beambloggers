@@ -73,6 +73,8 @@ defmodule Webring.FeedMe do
   def handle_info({:update, hash, feed}, %{feeds: feeds, feed_data: agg} = state) do
     agg =
       Enum.reduce(feed.items, agg, fn item, agg ->
+        IO.inspect(item, label: "SITE GUID")
+
         Aggregate.update_item(
           agg,
           item.guid,
@@ -204,6 +206,11 @@ defmodule Webring.FeedMe do
     with [] <- Floki.find(doc, "link[type=\"application/rss+xml\"") do
       Floki.find(doc, "link[type=\"application/atom+xml\"")
     end
+  end
+
+
+  defp request_url(_base_url, nil) do
+    {:error, :url_error}
   end
 
   defp request_url(base_url, url) do
