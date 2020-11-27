@@ -1,6 +1,8 @@
 defmodule WebringWeb.PageController do
   use WebringWeb, :controller
 
+  @latest_limit 12
+
   def index(conn, _params) do
     sites = Webring.Site.list_sites()
     feeds = Webring.FeedMe.list_feeds()
@@ -24,6 +26,7 @@ defmodule WebringWeb.PageController do
         end,
         :desc
       )
+      |> Enum.take(@latest_limit)
 
     sites =
       sites
@@ -43,5 +46,13 @@ defmodule WebringWeb.PageController do
       )
 
     render(conn, "index.html", %{sites: sites, feeds: feeds, latest: latest})
+  end
+
+  def rss(conn, _params) do
+    feed_xml = Webring.FeedMe.get_rss()
+
+    conn
+    |> put_resp_content_type("text/xml")
+    |> send_resp(200, feed_xml)
   end
 end

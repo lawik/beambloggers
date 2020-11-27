@@ -3,6 +3,8 @@ defmodule Webring.FeedMe do
 
   require Logger
 
+  alias Webring.FeedMe.Aggregate
+
   # hourly
   @check_interval 1000 * 60 * 60
 
@@ -16,13 +18,33 @@ defmodule Webring.FeedMe do
   end
 
   # GenServer Implementation
+  def get_rss do
+    GenServer.call(Webring.FeedMe, :rss)
+  end
+
   @impl true
   def init(nil) do
     sites = Webring.Site.list_sites()
 
+    feed_datetime =
+      "Etc/UTC"
+      |> Timex.now()
+      |> Timex.format!("{RFC1123}")
+
+    aggregated_feed =
+      Aggregate.new_feed(
+        "Beambloggers Webring",
+        "https://beambloggers.com/feed",
+        "A collection of our webring members posts in an aggregated RSS feed. Please check out their blog posts :)",
+        feed_datetime,
+        "en-us"
+      )
+
     state = %{
       sites: sites,
-      feeds: %{}
+      feeds: %{},
+      feed_data: aggregated_feed,
+      feed_string: Aggregate.render(aggregated_feed)
     }
 
     state = check(state)
@@ -36,6 +58,11 @@ defmodule Webring.FeedMe do
   end
 
   @impl true
+  def handle_call(:rss, _from, state) do
+    {:reply, state.feed_string, state}
+  end
+
+  @impl true
   def handle_info(:check, state) do
     state = check(state)
     schedule_check()
@@ -43,9 +70,23 @@ defmodule Webring.FeedMe do
   end
 
   @impl true
-  def handle_info({:update, hash, feed}, %{feeds: feeds} = state) do
+  def handle_info({:update, hash, feed}, %{feeds: feeds, feed_data: agg} = state) do
+    agg =
+      Enum.reduce(feed.items, agg, fn item, agg ->
+        Aggregate.update_item(
+          agg,
+          item.guid,
+          item.title,
+          item.description,
+          item.rfc_datetime,
+          item.url,
+          feed.title
+        )
+      end)
+
     feeds = Map.put(feeds, hash, feed)
-    {:noreply, %{state | feeds: feeds}}
+    feed_render = Aggregate.render(agg)
+    {:noreply, %{state | feeds: feeds, feed_data: agg, feed_string: feed_render}}
   end
 
   def schedule_check() do
@@ -54,15 +95,8 @@ defmodule Webring.FeedMe do
 
   def check_rss(site) do
     {:ok, body} = request_url(site.url, site.url)
-    # rss_url = find_rss(body, site.url)
 
     Logger.info("URL: #{site.url}")
-
-    # if is_nil(rss_url) do
-    #
-    # else
-    #
-    # end
 
     with  {:ok, rss_url} <- find_rss(body, site.url),
           {:ok, rss_feed_body} <- request_url(site.url, rss_url),
@@ -73,7 +107,6 @@ defmodule Webring.FeedMe do
 
       # entries
       ## title, description, pub_date, link, guid
-
       entries =
         Enum.map(feed.entries, fn item ->
           {datetime, iso} =
@@ -109,6 +142,7 @@ defmodule Webring.FeedMe do
       entry_count = Enum.count(entries)
       Logger.info("Items parse: #{entry_count}")
       %{title: feed.title, items: entries}
+
     else
       {:error, :rss_error} ->
         Logger.info("No RSS URL found")

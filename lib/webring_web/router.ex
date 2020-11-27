@@ -17,6 +17,7 @@ defmodule WebringWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/feed", PageController, :rss
   end
 
   # Other scopes may use custom stacks.
