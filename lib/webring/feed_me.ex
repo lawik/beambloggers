@@ -73,8 +73,6 @@ defmodule Webring.FeedMe do
   def handle_info({:update, hash, feed}, %{feeds: feeds, feed_data: agg} = state) do
     agg =
       Enum.reduce(feed.items, agg, fn item, agg ->
-        IO.inspect(item, label: "SITE GUID")
-
         Aggregate.update_item(
           agg,
           item.guid,
@@ -110,41 +108,42 @@ defmodule Webring.FeedMe do
       # entries
       ## title, description, pub_date, link, guid
       entries =
-        Enum.map(feed.entries, fn item ->
-          {datetime, iso} =
-            case Timex.parse(item.updated, "{RFC1123}") do
-              {:ok, dt} ->
-                {dt, Timex.format!(dt, "{ISO:Extended}")}
+      Enum.map(feed.entries, fn item ->
+        {datetime, iso} =
+          case Timex.parse(item.updated, "{RFC1123}") do
+            {:ok, dt} ->
+              {dt, Timex.format!(dt, "{ISO:Extended}")}
 
-              {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
-                {NaiveDateTime.from_iso8601!(item.updated), item.updated}
+            {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
+              {NaiveDateTime.from_iso8601!(item.updated), item.updated}
 
-              _ ->
-                {nil, nil}
-            end
+            _ ->
+              {nil, nil}
+          end
 
-          %{
-            title: item.title,
-            description: item.summary,
-            datetime: datetime,
-            iso_datetime: iso,
-            url: item.link
-          }
-        end)
-        |> Enum.filter(fn item ->
-          item.datetime
-        end)
-        |> Enum.sort_by(
-          fn item ->
-            item.iso_datetime
-          end,
-          :desc
-        )
+        %{
+          title: item.title,
+          guid: item.id,
+          description: item.summary,
+          rfc_datetime: item.updated,
+          datetime: datetime,
+          iso_datetime: iso,
+          url: item.link
+        }
+      end)
+      |> Enum.filter(fn item ->
+        item.datetime
+      end)
+      |> Enum.sort_by(
+        fn item ->
+          item.iso_datetime
+        end,
+        :desc
+      )
 
-      entry_count = Enum.count(entries)
-      Logger.info("Items parse: #{entry_count}")
-      %{title: feed.title, items: entries}
-
+    entry_count = Enum.count(entries)
+    Logger.info("Items parse: #{entry_count}")
+    %{title: feed.title, items: entries}
     else
       {:error, :rss_error} ->
         Logger.info("No RSS URL found")
