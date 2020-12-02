@@ -1,0 +1,5 @@
+https://blog.erlang.org
+
+Erlang/OTP technical blog
+
+The official blog of the Erlang/OTP team at Ericsson.
