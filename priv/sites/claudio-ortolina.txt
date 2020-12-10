@@ -1,0 +1,5 @@
+https://claudio-ortolina.org/tags/elixir/
+
+Claudio Ortolina
+
+Claudio is a software engineer and speaker, blogging about Elixir/OTP and other things.
