@@ -1,4 +1,4 @@
-https://claudio-ortolina.org/tags/elixir/
+https://claudio-ortolina.org/posts/index.xml
 
 Claudio Ortolina
 
