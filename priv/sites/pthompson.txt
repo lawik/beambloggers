@@ -2,4 +2,4 @@ http://blog.pthompson.org
 
 Patrick Thompson
 
-Indie developer and founder at Inkstone Software. Occasionally writes about the PETAL stack, which is Phoenix, Elixir, TailwindCSS, AlpineJS, and LiveView.
+Indie developer and founder at Inkstone Software. Writes occasionally on the PETAL stack, which is comprised of Phoenix, Elixir, Tailwind CSS, AlpineJS, and LiveView.
