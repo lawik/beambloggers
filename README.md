@@ -3,7 +3,7 @@
 
 Webrings are an old school web thing that is having a small resurgence these days. The idea is that a bunch of sites with related subject matter join a (circular) list and they all include a small element to send traffic to the other parts of the Webring. Recently famed is the [Weird Wide Webring](https://weirdwidewebring.net/) that gathers interesting, odd and quirky sites. We'll be the next semi-medium-sized thing.
 
-We're currently not particularly circular and we need a new design for our UI to navigate to the next page in the ring. But we gather the sites and provide them to visitors :)
+We're currently not particularly circular and we need a new design for our UI to navigate to the next page in the ring. You can already create your own links though by pointing towards `/random`, `/prev` and `/next` on the beamblogger domain. Besides that we gather the sites and provide them to visitors :)
 
 ## How to join (or leave)
 
@@ -16,6 +16,7 @@ Criteria:
 
 Recommendations:
 - Get an RSS feed if you don't have one already and add an RSS autodiscovery link if you don't have one
+- Add links on your site and point them to `/` (webring home), `/next`, `/prev` and `/random`
 
 If you want to leave or get rid of us, send a PR and we'll let you go :)
 
