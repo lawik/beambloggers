@@ -1,0 +1,5 @@
+https://patrykbak.com
+
+Patryk Bak
+
+A software developer specializing in backend development. Builds digital products, which scale a business and facilitate people's lives, with Elixir.
