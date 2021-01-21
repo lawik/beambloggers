@@ -41,6 +41,8 @@ defmodule Webring.Site do
     :crypto.hash(:md5, filename <> data) |> Base.encode16()
   end
 
+  # ordered list of sites determined at compile time, order should only change if logic changes
+  # additions/deletions can happen but don't change the order
   def list_sites do
     @sites
     |> Enum.map(fn site ->

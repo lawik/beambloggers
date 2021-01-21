@@ -18,6 +18,10 @@ defmodule WebringWeb.Router do
 
     get "/", PageController, :index
     get "/feed", PageController, :rss
+
+    get "/random", RingController, :random
+    get "/prev", RingController, :prev
+    get "/next", RingController, :next
   end
 
   # Other scopes may use custom stacks.
