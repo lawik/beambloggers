@@ -2,4 +2,4 @@ https://www.thegreatcodeadventure.com/
 
 Sophie DeBenedetto
 
-Sophie is engineer currently writing code for GitHub, as well as a maintainer of Elixir School https://elixirschool.com/en/ and a host of the Elixir Mix podcast https://devchat.tv/podcasts/elixir-mix/ View her cute dog https://www.thegreatcodeadventure.com/assets/images/moebi.png?v=c0d041046c
+Sophie is engineer currently writing code for GitHub, as well as a maintainer of Elixir School https://elixirschool.com/en/ and a host of the Elixir Mix podcast https://devchat.tv/podcasts/elixir-mix/ View [her cute dog](https://www.thegreatcodeadventure.com/assets/images/moebi.png?v=c0d041046c)
