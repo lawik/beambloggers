@@ -1,0 +1,5 @@
+https://angelika.me/blog
+
+Angelika Tyborska
+
+Angelika is a web developer based in Berlin, Germany. She blogs about Elixir and web development, maintains the Elixir track on Exrcism.io, and makes silly things with CSS.
