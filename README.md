@@ -1,4 +1,7 @@
 # Webring
+
+The Beam Bloggers webring is a collection of people and small companies blogging about Elixir, Erlang and other topics around the BEAM ecosystem. You find the site at [beambloggers.com](https://beambloggers.com).
+
 ## What is a Webring
 
 Webrings are an old school web thing that is having a small resurgence these days. The idea is that a bunch of sites with related subject matter join a (circular) list and they all include a small element to send traffic to the other parts of the Webring. Recently famed is the [Weird Wide Webring](https://weirdwidewebring.net/) that gathers interesting, odd and quirky sites. We'll be the next semi-medium-sized thing.
