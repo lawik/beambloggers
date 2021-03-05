@@ -50,7 +50,10 @@ defmodule Webring.MixProject do
       {:finch, "~> 0.5"},
       {:floki, "~> 0.29"},
       {:timex, "~> 3.0"},
-      {:rss, github: "lawik/elixir-rss"}
+      {:rss, github: "lawik/elixir-rss"},
+      {:ci, "~> 0.1.1", only: :dev},
+      # TODO: Add credo
+      {:sshkit, "~> 0.1", only: :dev}
     ]
   end
 
