@@ -1,4 +1,9 @@
 defmodule Webring.FeedMe do
+  @moduledoc """ 
+
+  Collects RSS feeds from member sites and put them together in one single feed.
+  
+  """
   use GenServer
 
   require Logger
@@ -185,7 +190,7 @@ defmodule Webring.FeedMe do
   defp find_rss(body, url) do
     case Floki.parse_document(body) do
       {:ok, doc} ->
-        rss_url = find_rss_link(doc)
+        rss_url = find_rss_link(doc) 
         |> Enum.find_value(fn {_link, attrs, _} ->
           Enum.find_value(attrs, fn {key, value} ->
             # Some are relative, fix that

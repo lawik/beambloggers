@@ -1,4 +1,9 @@
 defmodule Webring.Site do
+  @moduledoc """ 
+
+  Generates list of sites from textfiles in sites folder 
+  
+  """
   defstruct hash: nil, title: nil, url: nil, description: nil, fancy_body: nil
 
   alias Webring.Site
