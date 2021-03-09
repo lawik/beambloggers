@@ -244,7 +244,9 @@ defmodule Webring.FeedMe do
         key == "location" && value
       end)
 
-    if not is_nil(new_url) do
+    if is_nil(new_url) do
+      ""
+    else
       new_url =
         if String.starts_with?(new_url, "http") do
           new_url
@@ -259,8 +261,6 @@ defmodule Webring.FeedMe do
       else
         request_url(base_url, new_url)
       end
-    else
-      ""
     end
   end
 end
