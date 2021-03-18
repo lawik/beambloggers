@@ -1,8 +1,8 @@
 defmodule Webring.Site do
-  @moduledoc """ 
+  @moduledoc """
 
-  Generates list of sites from textfiles in sites folder 
-  
+  Generates list of sites from textfiles in sites folder
+
   """
   defstruct hash: nil, title: nil, url: nil, description: nil, fancy_body: nil
 
@@ -39,8 +39,6 @@ defmodule Webring.Site do
       :erlang.md5(@site_files)
   end
 
-  # TODO: Remove me once we require Elixir v1.11+.
-  def __phoenix_recompile__?, do: __mix_recompile__?()
 
   def hash(filename, data) do
     :crypto.hash(:md5, filename <> data) |> Base.encode16()
