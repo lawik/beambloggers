@@ -1,6 +1,6 @@
 defmodule Webring.FeedMe.Aggregate do
   @moduledoc """
-  
+
   Uses elixir-rss to aggregate RSS feeds.
 
   """
