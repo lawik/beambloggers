@@ -5,7 +5,7 @@ defmodule Webring.MixProject do
     [
       app: :webring,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -50,7 +50,8 @@ defmodule Webring.MixProject do
       {:finch, "~> 0.5"},
       {:floki, "~> 0.29"},
       {:timex, "~> 3.0"},
-      {:rss, github: "lawik/elixir-rss"}
+      {:rss, github: "lawik/elixir-rss"},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
 

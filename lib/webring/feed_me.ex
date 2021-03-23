@@ -1,4 +1,9 @@
 defmodule Webring.FeedMe do
+  @moduledoc """
+
+  Collects RSS feeds from member sites and put them together in one single feed.
+
+  """
   use GenServer
 
   require Logger
@@ -98,60 +103,62 @@ defmodule Webring.FeedMe do
 
     Logger.info("URL: #{site.url}")
 
-    with  {:ok, rss_url} <- find_rss(body, site.url),
-          {:ok, rss_feed_body} <- request_url(site.url, rss_url),
-          {:ok, feed} <- parse_feed(rss_feed_body)
-    do
+    with {:ok, rss_url} <- find_rss(body, site.url),
+         {:ok, rss_feed_body} <- request_url(site.url, rss_url),
+         {:ok, feed} <- parse_feed(rss_feed_body) do
       Logger.info("RSS URL: #{rss_url}")
       Logger.info("Parsing seems okay, found title: #{feed.title}")
 
       # entries
       ## title, description, pub_date, link, guid
       entries =
-      Enum.map(feed.entries, fn item ->
-        {datetime, iso} =
-          case Timex.parse(item.updated, "{RFC1123}") do
-            {:ok, dt} ->
-              {dt, Timex.format!(dt, "{ISO:Extended}")}
+        Enum.map(feed.entries, fn item ->
+          {datetime, iso} =
+            case Timex.parse(item.updated, "{RFC1123}") do
+              {:ok, dt} ->
+                {dt, Timex.format!(dt, "{ISO:Extended}")}
 
-            {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
-              {NaiveDateTime.from_iso8601!(item.updated), item.updated}
+              {:error, "Expected `weekday abbreviation` at line 1, column 1."} ->
+                {NaiveDateTime.from_iso8601!(item.updated), item.updated}
 
-            _ ->
-              {nil, nil}
-          end
+              _ ->
+                {nil, nil}
+            end
 
-        %{
-          title: item.title,
-          guid: item.id,
-          description: item.summary,
-          rfc_datetime: item.updated,
-          datetime: datetime,
-          iso_datetime: iso,
-          url: item.link
-        }
-      end)
-      |> Enum.filter(fn item ->
-        item.datetime
-      end)
-      |> Enum.sort_by(
-        fn item ->
-          item.iso_datetime
-        end,
-        :desc
-      )
+          %{
+            title: item.title,
+            guid: item.id,
+            description: item.summary,
+            rfc_datetime: item.updated,
+            datetime: datetime,
+            iso_datetime: iso,
+            url: item.link
+          }
+        end)
+        |> Enum.filter(fn item ->
+          item.datetime
+        end)
+        |> Enum.sort_by(
+          fn item ->
+            item.iso_datetime
+          end,
+          :desc
+        )
 
-    entry_count = Enum.count(entries)
-    Logger.info("Items parse: #{entry_count}")
-    %{title: feed.title, items: entries}
+      entry_count = Enum.count(entries)
+      Logger.info("Items parse: #{entry_count}")
+      %{title: feed.title, items: entries}
     else
       {:error, :rss_error} ->
         Logger.info("No RSS URL found")
         nil
-      {:error, :parse_error} -> nil
-      {:error, :url_error} -> nil
-    end
 
+      {:error, :parse_error} ->
+        nil
+
+      {:error, :url_error} ->
+        nil
+    end
   end
 
   defp check(%{sites: sites} = state) do
@@ -185,15 +192,9 @@ defmodule Webring.FeedMe do
   defp find_rss(body, url) do
     case Floki.parse_document(body) do
       {:ok, doc} ->
-        rss_url = find_rss_link(doc)
-        |> Enum.find_value(fn {_link, attrs, _} ->
-          Enum.find_value(attrs, fn {key, value} ->
-            # Some are relative, fix that
-            if key == "href", do: URI.merge(url, value), else: nil
-          end)
-        end)
+        rss_url = find_rss_link(doc, url  )
 
-      {:ok, rss_url}
+        {:ok, rss_url}
 
       error ->
         Logger.info("Parsing failed for URL #{url}: #{inspect(error)}")
@@ -201,12 +202,21 @@ defmodule Webring.FeedMe do
     end
   end
 
-  defp find_rss_link(doc) do
+  defp find_rss_link(doc, url) do
     with [] <- Floki.find(doc, "link[type=\"application/rss+xml\"") do
       Floki.find(doc, "link[type=\"application/atom+xml\"")
     end
+    |> Enum.find_value(fn link ->
+      extract_rss_url(link, url)
+    end)
   end
 
+  defp extract_rss_url({_link, attrs, _}, url) do
+      Enum.find_value(attrs, fn {key, value} ->
+        # Some are relative, fix that
+        if key == "href", do: URI.merge(url, value), else: nil
+      end)
+  end
 
   defp request_url(_base_url, nil) do
     {:error, :url_error}
@@ -239,7 +249,9 @@ defmodule Webring.FeedMe do
         key == "location" && value
       end)
 
-    if not is_nil(new_url) do
+    if is_nil(new_url) do
+      ""
+    else
       new_url =
         if String.starts_with?(new_url, "http") do
           new_url
@@ -254,8 +266,6 @@ defmodule Webring.FeedMe do
       else
         request_url(base_url, new_url)
       end
-    else
-      ""
     end
   end
 end
