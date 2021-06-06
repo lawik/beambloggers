@@ -1,0 +1,5 @@
+https://keathley.io
+
+Chris Keathley
+
+Chris Keathley is a software engineer building systems with Elixir and Erlang. He writes about software design, open source, and cool Elixir ideas.
