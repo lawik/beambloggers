@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
+
+body {
+  background-color: rgb(162, 0, 62); /* Erlang Red */
+  color: white;
+  font-family: "Titillium Web", helvetica, arial, "sans-serif";
+  padding: 16px;
+}
+
+h1,
+p,
+.site,
+.latest {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a,
+a:link,
+a:active,
+a:visited {
+  color: white;
+  text-decoration: underline;
+}
+
+ul {
+  list-style-type: square;
+}

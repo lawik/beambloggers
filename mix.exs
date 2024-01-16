@@ -7,7 +7,7 @@ defmodule Webring.MixProject do
       version: "0.1.0",
       elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -51,6 +51,7 @@ defmodule Webring.MixProject do
       {:floki, "~> 0.29"},
       {:timex, "~> 3.0"},
       {:rss, github: "lawik/elixir-rss"},
+      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
@@ -63,9 +64,7 @@ defmodule Webring.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "assets.deploy": ["esbuild default --minify", "phx.digest"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
