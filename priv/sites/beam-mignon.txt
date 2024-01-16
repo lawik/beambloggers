@@ -1,5 +1,0 @@
-https://beam-mignon.joaohf.tk/
-
-João Henrique Ferreira de Freitas
-
-João is an Erlang and C embedded Linux software engineer based in Brazil. He loves to share BEAM ideas.

@@ -1,5 +1,0 @@
-https://preslav.me
-
-Preslav Rachev
-
-Preslav is a software engineer and entrepreneur based in Munich, Germany. A genuinely curious individual, always toying around with new ideas. Constantly spreading the word about Elixir and Erlang.
