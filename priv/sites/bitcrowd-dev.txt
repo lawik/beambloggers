@@ -1,0 +1,5 @@
+https://bitcrowd.dev/
+
+bitcrowd
+
+bitcrowd is a software agency from Berlin, Germany. They work with Elixir and the Beam and frequently blog about it and other web development or software engineering related topics.
